@@ -30,11 +30,15 @@
 
 * { box-sizing: border-box; }
 
+/* Text scale. Everything below is sized in rem, so this one number moves the
+   whole app: 100% is the browser default of 16px, 125% makes it 20px. */
+html { font-size: 125%; }
+
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  font: .95rem/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -66,10 +70,10 @@ h2 {
 
 .actions { display: flex; flex-wrap: wrap; gap: .5rem; }
 
-/* 16px on anything focusable that accepts input: iOS Safari zooms the page
-   when a focused control is smaller than that. */
+/* Must stay at or above 16px computed: iOS Safari zooms the page when a
+   focused control is smaller than that. At a 125% root, 1rem is 20px. */
 button, .file-btn, input, select, textarea {
-  font: inherit; font-size: 16px;
+  font: inherit; font-size: 1rem;
   padding: .5rem .8rem; border-radius: 8px;
   border: 1px solid var(--line); background: var(--surface); color: var(--ink);
 }
@@ -107,7 +111,7 @@ button.primary:hover { filter: brightness(1.08); background: var(--accent); }
 .rows { display: flex; flex-direction: column; gap: .4rem; }
 .row {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .6rem;
-  width: 100%; text-align: left; padding: .7rem .85rem; font-size: 15px;
+  width: 100%; text-align: left; padding: .7rem .85rem; font-size: .95rem;
   background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
 }
 button.row:hover { background: var(--surface-2); }

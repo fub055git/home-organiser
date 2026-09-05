@@ -64,10 +64,10 @@ export function renderItemForm(state, { id = null, locationId = null }, ctx) {
 
   const fileInput = el('input', {
     type: 'file',
+    // No `capture` attribute on purpose. It forces the camera and removes the
+    // photo-library option entirely, so an existing photo cannot be chosen.
+    // accept="image/*" alone gets a chooser offering both.
     accept: 'image/*',
-    // On a phone this opens the camera directly; on desktop it is ignored
-    // and the same element is an ordinary file picker.
-    capture: 'environment',
     onChange: async (e) => {
       const file = e.target.files && e.target.files[0];
       e.target.value = '';

@@ -27,26 +27,67 @@ export function fitWithin(w, h, max = MAX_EDGE) {
   };
 }
 
+/**
+ * Decode a file to something drawable, preferring the path that applies the
+ * EXIF rotation.
+ *
+ * Phones store portrait shots rotated with an EXIF flag saying so. Passing
+ * imageOrientation is the clean way to honour it -- but Safari only accepted
+ * that options argument from version 17, so older iPhones throw here. Falling
+ * back to an <img> is not a downgrade: browsers apply EXIF orientation when
+ * decoding an image element too.
+ */
+async function decodeImage(file) {
+  if (typeof createImageBitmap === 'function') {
+    try {
+      return await createImageBitmap(file, { imageOrientation: 'from-image' });
+    } catch { /* older Safari rejects the options argument */ }
+    try {
+      return await createImageBitmap(file);
+    } catch { /* fall through to the <img> path */ }
+  }
+
+  const url = URL.createObjectURL(file);
+  try {
+    // onload rather than decode(): decode() can stall indefinitely while the
+    // document is hidden, which is exactly what happens if you switch apps
+    // mid-import. onload does not depend on the page being painted.
+    return await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('image could not be decoded'));
+      img.src = url;
+    });
+  } finally {
+    // Safe once loaded: the pixels are already in memory.
+    URL.revokeObjectURL(url);
+  }
+}
+
 /** File from a camera or picker -> a downscaled JPEG Blob ready for the store. */
 export async function preparePhoto(file) {
   if (!file) return null;
-
-  let bitmap;
-  try {
-    // Phones store portrait shots rotated, with an EXIF flag saying so. An
-    // <img> honours that flag but a canvas draw does not, so decoding with
-    // 'from-image' is what stops portrait photos coming out sideways.
-    bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-  } catch {
-    throw new Error('That file is not an image this browser can read.');
+  if (file.type && !file.type.startsWith('image/')) {
+    throw new Error(`That file is ${file.type}, not an image.`);
   }
 
-  const { width, height } = fitWithin(bitmap.width, bitmap.height);
+  let source;
+  try {
+    source = await decodeImage(file);
+  } catch (err) {
+    // Carry the underlying reason: on a phone there is no console to check.
+    throw new Error(`Could not read that image${err?.message ? ` (${err.message})` : ''}.`);
+  }
+
+  const { width, height } = fitWithin(
+    source.naturalWidth || source.width,
+    source.naturalHeight || source.height,
+  );
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
-  canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
-  bitmap.close();
+  canvas.getContext('2d').drawImage(source, 0, 0, width, height);
+  if (typeof source.close === 'function') source.close(); // ImageBitmap only
 
   const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY));
   if (!blob) throw new Error('Could not process that image.');
