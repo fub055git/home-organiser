@@ -1,0 +1,212 @@
+/* Light palette on :root; only the tokens are redefined for dark, so a colour
+   is never defined in one place only. */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f5;
+  --ink: #16202b;
+  --ink-2: #5b6a7b;
+  --line: #d8dee6;
+  --accent: #2563eb;
+  --ok: #157a4a;
+  --warn: #8a5a00;
+  --bad: #b3261e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1720;
+    --surface: #161f2a;
+    --surface-2: #1d2733;
+    --ink: #e6ecf3;
+    --ink-2: #9aa8b8;
+    --line: #2a3644;
+    --accent: #7aa2f7;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.app-bar {
+  display: flex; flex-wrap: wrap; gap: .25rem 1rem; align-items: baseline;
+  padding: .75rem 1rem;
+  padding-top: max(.75rem, env(safe-area-inset-top));
+  background: var(--surface); border-bottom: 1px solid var(--line);
+}
+.app-bar h1 { margin: 0; font-size: 1.05rem; letter-spacing: .01em; }
+.app-bar h1 a { color: inherit; text-decoration: none; }
+
+nav.top { display: flex; gap: 1rem; }
+nav.top a { color: var(--ink-2); text-decoration: none; font-size: .9rem; padding: .1rem 0; border-bottom: 2px solid transparent; }
+nav.top a.on { color: var(--ink); border-bottom-color: var(--accent); }
+
+main { max-width: 40rem; margin: 0 auto; padding: 0 1rem 3rem; }
+
+h2 {
+  font-size: 1rem; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--ink-2); margin: 1.75rem 0 .6rem;
+}
+
+.hint { color: var(--ink-2); font-size: .85rem; margin: .3rem 0 .6rem; }
+
+.counts { list-style: none; margin: 0; padding: 0; display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.counts strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; display: block; }
+.counts li { color: var(--ink-2); font-size: .85rem; }
+
+.actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+/* 16px on anything focusable that accepts input: iOS Safari zooms the page
+   when a focused control is smaller than that. */
+button, .file-btn, input, select, textarea {
+  font: inherit; font-size: 16px;
+  padding: .5rem .8rem; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+button, .file-btn { cursor: pointer; }
+button:hover, .file-btn:hover { background: var(--surface-2); }
+button.danger { color: var(--bad); border-color: var(--bad); }
+
+.file-btn { display: inline-block; }
+.file-btn input { display: none; }
+
+.warnings { margin: .5rem 0 0; padding-left: 1.1rem; color: var(--ink-2); font-size: .85rem; }
+.warnings li { margin: .15rem 0; }
+
+/* ------------------------------------------------------------ stage 3 --- */
+
+.head { display: flex; flex-wrap: wrap; gap: .5rem .75rem; align-items: center; margin: 1.75rem 0 .6rem; }
+.head h2 { margin: 0; text-transform: none; letter-spacing: 0; font-size: 1.25rem; color: var(--ink); }
+.head .primary { margin-left: auto; }
+
+h3 { font-size: .95rem; margin: 1.5rem 0 .4rem; color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; }
+
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.primary:hover { filter: brightness(1.08); background: var(--accent); }
+
+.empty { color: var(--ink-2); font-size: .9rem; padding: .75rem 0; }
+
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem; margin-top: 1rem; font-size: .85rem; }
+.crumbs button {
+  background: none; border: none; padding: .1rem .15rem; font-size: .85rem;
+  color: var(--accent); cursor: pointer; border-radius: 4px;
+}
+.crumbs button:hover { text-decoration: underline; background: none; }
+.crumbs .sep { color: var(--ink-2); }
+
+.rows { display: flex; flex-direction: column; gap: .4rem; }
+.row {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .6rem;
+  width: 100%; text-align: left; padding: .7rem .85rem; font-size: 15px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+}
+button.row:hover { background: var(--surface-2); }
+.cat-row { align-items: center; gap: .5rem; }
+.cat-row input { flex: 1 1 8rem; min-width: 0; }
+.row-actions { display: flex; gap: .35rem; margin-left: auto; }
+.row-actions button { padding: .3rem .6rem; font-size: .85rem; }
+
+.add-row { display: flex; gap: .5rem; margin: .75rem 0 1rem; max-width: 26rem; }
+.add-row input { flex: 1 1 auto; min-width: 0; }
+
+/* ------------------------------------------------------------ stage 5 --- */
+
+.item-row { align-items: center; gap: .6rem; }
+.thumb {
+  width: 40px; height: 40px; flex: 0 0 40px;
+  border-radius: 8px; object-fit: cover; background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.thumb-empty { display: inline-block; }
+
+.form textarea { width: 100%; resize: vertical; font-family: inherit; }
+
+/* ------------------------------------------------------------ stage 8 --- */
+
+.banner {
+  margin: 1.25rem 0 0; padding: .8rem .9rem;
+  border: 1px solid var(--warn); border-radius: 10px;
+  background: color-mix(in srgb, var(--warn) 8%, var(--surface));
+}
+.banner-title { margin: 0 0 .4rem; font-weight: 600; font-size: .9rem; color: var(--warn); }
+.banner ul { margin: 0; padding-left: 1.1rem; font-size: .85rem; color: var(--ink-2); }
+.banner li { margin: .2rem 0; }
+
+.linkish {
+  background: none; border: none; padding: 0; font: inherit; font-size: inherit;
+  color: var(--accent); cursor: pointer; text-align: left;
+}
+.linkish:hover { text-decoration: underline; background: none; }
+
+.chip.overdue { color: var(--warn); border-color: var(--warn); background: transparent; }
+.hint.overdue-text { color: var(--warn); }
+
+/* ------------------------------------------------------------ stage 7 --- */
+
+.tips {
+  margin: 2rem 0 0; padding: .1rem .9rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+}
+.tips summary {
+  cursor: pointer; padding: .7rem 0; font-size: .85rem;
+  color: var(--ink-2); list-style-position: outside;
+}
+.tips summary:hover { color: var(--ink); }
+.tips[open] summary { border-bottom: 1px solid var(--line); margin-bottom: .5rem; }
+.tips ul { margin: 0 0 .9rem; padding-left: 1.1rem; }
+.tips li { margin: .4rem 0; font-size: .9rem; }
+
+/* ------------------------------------------------------------ stage 6 --- */
+
+.find-controls { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 .5rem; }
+.find-controls input[type="search"] { flex: 2 1 12rem; min-width: 0; }
+.find-controls select { flex: 1 1 9rem; min-width: 0; }
+
+.result-row { align-items: center; gap: .6rem; }
+.result-main { display: flex; flex-direction: column; gap: .15rem; flex: 1 1 auto; min-width: 0; }
+.result-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem; }
+.result-path { color: var(--ink-2); font-size: .8rem; overflow-wrap: anywhere; }
+
+.photo-box { display: flex; flex-direction: column; gap: .6rem; }
+.photo-preview {
+  display: block; max-width: 100%; max-height: 18rem; width: auto;
+  border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2);
+}
+.row-main { display: flex; align-items: baseline; gap: .5rem; flex: 1 1 auto; min-width: 0; }
+.row-name { font-weight: 600; overflow-wrap: anywhere; }
+.row-meta { color: var(--ink-2); font-size: .82rem; white-space: nowrap; }
+
+.chip {
+  font-size: .72rem; padding: .12rem .45rem; border-radius: 999px;
+  background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.form { display: flex; flex-direction: column; gap: .9rem; max-width: 26rem; margin-top: 1rem; }
+.form h2 { margin: 0; }
+.form label { display: block; }
+.form label > span { display: block; font-size: .8rem; color: var(--ink-2); margin-bottom: .2rem; }
+.form input, .form select { width: 100%; }
+.form .actions { margin-top: .3rem; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 1.25rem; transform: translate(-50%, .5rem);
+  margin: 0; max-width: min(30rem, calc(100vw - 2rem));
+  padding: .6rem .9rem; border-radius: 10px; font-size: .88rem;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .18);
+  opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s;
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+.toast.bad { border-color: var(--bad); color: var(--bad); }
+.toast.warn { border-color: var(--warn); color: var(--warn); }

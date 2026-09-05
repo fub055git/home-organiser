@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Home Organiser">
+  <rect width="100" height="100" rx="18" fill="#0f1720"/>
+  <g transform="translate(6 6) scale(0.88)">
+    <rect x="12.0" y="22.0" width="3.5" height="62.0" fill="#8fa3b8"/>
+    <rect x="84.5" y="22.0" width="3.5" height="62.0" fill="#8fa3b8"/>
+    <rect x="12.0" y="47.5" width="76.0" height="3.5" fill="#8fa3b8"/>
+    <rect x="12.0" y="80.5" width="76.0" height="3.5" fill="#8fa3b8"/>
+    <rect x="19.0" y="28.0" width="21.0" height="19.5" fill="#e0a458"/>
+    <rect x="46.0" y="34.0" width="17.0" height="13.5" fill="#e0a458"/>
+    <rect x="19.0" y="60.0" width="17.0" height="20.5" fill="#e0a458"/>
+    <rect x="42.0" y="66.0" width="26.0" height="14.5" fill="#e0a458"/>
+  </g>
+</svg>

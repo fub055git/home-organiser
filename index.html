@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home Organiser</title>
+<meta name="description" content="Organise where things live across the house. Local storage only, no accounts, no server.">
+<meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Organiser">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="app-bar">
+  <h1><a href="#/">Home Organiser</a></h1>
+  <nav class="top">
+    <a href="#/" data-view="browse">Browse</a>
+    <a href="#/find" data-view="find">Find</a>
+    <a href="#/categories" data-view="categories">Categories</a>
+    <a href="#/settings" data-view="settings">Backup</a>
+  </nav>
+</header>
+
+<main id="main" aria-live="polite">
+  <p class="empty">Loading…</p>
+</main>
+
+<p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+<script type="module" src="src/pwa.js"></script>
+<script type="module" src="src/app.js"></script>
+</body>
+</html>

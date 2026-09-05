@@ -1,0 +1,12 @@
+{
+  "name": "home-organiser",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-only PWA for organising where things live across the house. No backend, no accounts, no sync.",
+  "scripts": {
+    "test": "node tests/run.js",
+    "icons": "node scripts/make-icons.mjs",
+    "serve": "npx --yes serve -l 5051 ."
+  }
+}
