@@ -15,7 +15,7 @@
 // Bumping CACHE ships new code and leaves every item, location and photo
 // untouched.
 
-const CACHE = 'home-organiser-v11';
+const CACHE = 'home-organiser-v13';
 
 const ASSETS = [
   './',

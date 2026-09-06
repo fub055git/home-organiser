@@ -5,7 +5,8 @@
 import { el, clear, objectUrl } from './ui.js';
 import { preparePhoto } from './photo.js';
 import { pathOf } from './tree.js';
-import { ITEM_SUGGESTIONS } from './suggestions.js';
+import { ITEM_SUGGESTIONS, categoryForItem } from './suggestions.js';
+import { findByName } from './schema.js';
 import * as store from './store.js';
 
 /** One item as a row inside its location. */
@@ -61,6 +62,49 @@ export function renderItemForm(state, { id = null, locationId = null }, ctx) {
     [...state.categories].sort((a, b) => a.name.localeCompare(b.name)).map((c) =>
       el('option', { value: c.id, selected: existing?.categoryId === c.id }, c.name)),
   );
+
+  // Picking a suggested name proposes its category, which is what stops
+  // categories being a field nobody ever fills in. It only ever fills an
+  // empty selection -- a deliberate choice is never overridden -- and a
+  // category that does not exist yet is marked "(new)" so nothing is created
+  // without being visible on the form first.
+  const NEW_PREFIX = 'new:';
+  // What this code last set, so a proposal can be revised while a choice you
+  // made yourself is left alone. Without it, picking "Tent" then correcting
+  // the name to "Toolbox" would save the item under Camping.
+  let proposed = null;
+
+  function proposeCategory() {
+    if (categorySelect.value && categorySelect.value !== proposed) return;
+
+    const suggested = categoryForItem(nameInput.value);
+    if (!suggested) {
+      categorySelect.value = '';
+      proposed = null;
+      pruneUnusedNewOptions();
+      return;
+    }
+
+    const already = findByName(state.categories, suggested);
+    const value = already ? already.id : NEW_PREFIX + suggested;
+    if (!already && ![...categorySelect.options].some((o) => o.value === value)) {
+      categorySelect.append(el('option', { value }, `${suggested} (new)`));
+    }
+    categorySelect.value = value;
+    proposed = value;
+    pruneUnusedNewOptions();
+  }
+
+  /** Drop "(new)" options left behind by earlier proposals. */
+  function pruneUnusedNewOptions() {
+    for (const option of [...categorySelect.options]) {
+      if (option.value.startsWith(NEW_PREFIX) && option.value !== categorySelect.value) {
+        option.remove();
+      }
+    }
+  }
+
+  nameInput.addEventListener('input', proposeCategory);
 
   const locationSelect = el('select', { required: true },
     state.locations.map((l) =>
@@ -127,11 +171,18 @@ export function renderItemForm(state, { id = null, locationId = null }, ctx) {
       if (!name) { ctx.toast('Give it a name.', 'bad'); return; }
       if (!locationSelect.value) { ctx.toast('An item has to live somewhere.', 'bad'); return; }
       try {
+        let categoryId = categorySelect.value || null;
+        if (categoryId?.startsWith(NEW_PREFIX)) {
+          const wanted = categoryId.slice(NEW_PREFIX.length);
+          // Re-check by name: it may have been created since the form opened.
+          const already = findByName(state.categories, wanted);
+          categoryId = already ? already.id : (await store.saveCategory({ name: wanted })).id;
+        }
         await store.saveItem({
           id: existing?.id,
           name,
           locationId: locationSelect.value,
-          categoryId: categorySelect.value || null,
+          categoryId,
           quantity: Math.max(0, Math.trunc(Number(qtyInput.value)) || 0),
           notes: notesInput.value.trim() || null,
           expiryDate: expiryInput.value || null,
@@ -148,7 +199,8 @@ export function renderItemForm(state, { id = null, locationId = null }, ctx) {
     el('h2', {}, existing ? 'Edit item' : 'Add item'),
     el('label', {}, el('span', {}, 'Name'), nameInput, nameList),
     el('label', {}, el('span', {}, 'Location'), locationSelect),
-    el('label', {}, el('span', {}, 'Category'), categorySelect),
+    el('label', {}, el('span', {}, 'Category'), categorySelect,
+      el('span', { class: 'field-hint' }, 'Fills in for common items. Change or clear it any time.')),
     el('label', {}, el('span', {}, 'Quantity'), qtyInput),
     el('label', {}, el('span', {}, 'Expires'), expiryInput),
     el('label', {}, el('span', {}, 'Notes'), notesInput),

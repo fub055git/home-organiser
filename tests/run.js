@@ -22,7 +22,7 @@ import {
 } from '../src/tree.js';
 import { fitWithin } from '../src/photo.js';
 import { TIPS, tipsFor } from '../src/tips.js';
-import { ITEM_SUGGESTIONS } from '../src/suggestions.js';
+import { ITEM_SUGGESTIONS, SUGGESTION_GROUPS, categoryForItem } from '../src/suggestions.js';
 import { addMonths, todayISO, isOverdue, cadenceFor, overdueLocations } from '../src/review.js';
 
 let passed = 0;
@@ -422,6 +422,33 @@ test('item suggestions are clean, non-empty strings', () => {
     assert.equal(name, name.trim(), `has stray whitespace: "${name}"`);
   }
   assert.ok(ITEM_SUGGESTIONS.length > 100, 'should be a useful spread, not a token list');
+});
+
+test('the flat list is exactly the groups, so the two cannot drift', () => {
+  const fromGroups = Object.values(SUGGESTION_GROUPS).flat();
+  assert.deepEqual(ITEM_SUGGESTIONS, fromGroups);
+  assert.ok(Object.keys(SUGGESTION_GROUPS).length >= 10, 'a useful spread of categories');
+});
+
+test('categoryForItem maps a suggested name to its group', () => {
+  assert.equal(categoryForItem('Whipper snipper'), 'Garden');
+  assert.equal(categoryForItem('Jumper leads'), 'Car');
+  assert.equal(categoryForItem('Cordless drill'), 'Tools');
+  assert.equal(categoryForItem('Spare doonas'), 'Linen');
+  assert.equal(categoryForItem('Tent'), 'Camping');
+});
+
+test('categoryForItem tolerates the messy input a text field produces', () => {
+  assert.equal(categoryForItem('  cordless DRILL  '), 'Tools');
+  assert.equal(categoryForItem('Something I made up'), null);
+  assert.equal(categoryForItem(''), null);
+  assert.equal(categoryForItem(null), null);
+  assert.equal(categoryForItem('constructor'), null, 'a Map, so no inherited keys');
+});
+
+test('every suggestion resolves to exactly one category', () => {
+  const unresolved = ITEM_SUGGESTIONS.filter((n) => categoryForItem(n) === null);
+  assert.deepEqual(unresolved, [], 'suggestions with no category');
 });
 
 test('nothing in the suggestions assumes a second storey', () => {
