@@ -5,6 +5,7 @@
 import { el, clear, objectUrl } from './ui.js';
 import { preparePhoto } from './photo.js';
 import { pathOf } from './tree.js';
+import { ITEM_SUGGESTIONS } from './suggestions.js';
 import * as store from './store.js';
 
 /** One item as a row inside its location. */
@@ -42,7 +43,15 @@ export function renderItemForm(state, { id = null, locationId = null }, ctx) {
   let photo = existing ? existing.photo : null;
   const startLocation = existing ? existing.locationId : locationId;
 
-  const nameInput = el('input', { type: 'text', required: true, maxLength: 120, value: existing?.name || '' });
+  // Suggestions only: the field still accepts anything typed.
+  const nameList = el('datalist', { id: 'common-items' },
+    ITEM_SUGGESTIONS.map((name) => el('option', { value: name })));
+  const nameInput = el('input', {
+    type: 'text', required: true, maxLength: 120,
+    value: existing?.name || '',
+    list: 'common-items',
+    autocomplete: 'off',
+  });
   const qtyInput = el('input', { type: 'number', min: 0, step: 1, value: String(existing?.quantity ?? 1) });
   const notesInput = el('textarea', { rows: 3, maxLength: 2000 }, existing?.notes || '');
   const expiryInput = el('input', { type: 'date', value: existing?.expiryDate || '' });
@@ -137,7 +146,7 @@ export function renderItemForm(state, { id = null, locationId = null }, ctx) {
     },
   },
     el('h2', {}, existing ? 'Edit item' : 'Add item'),
-    el('label', {}, el('span', {}, 'Name'), nameInput),
+    el('label', {}, el('span', {}, 'Name'), nameInput, nameList),
     el('label', {}, el('span', {}, 'Location'), locationSelect),
     el('label', {}, el('span', {}, 'Category'), categorySelect),
     el('label', {}, el('span', {}, 'Quantity'), qtyInput),

@@ -15,7 +15,7 @@
 // Bumping CACHE ships new code and leaves every item, location and photo
 // untouched.
 
-const CACHE = 'home-organiser-v9';
+const CACHE = 'home-organiser-v11';
 
 const ASSETS = [
   './',
@@ -40,6 +40,7 @@ const ASSETS = [
   'src/find.js',
   'src/tips.js',
   'src/review.js',
+  'src/suggestions.js',
   'src/photo.js',
   'src/settings.js',
 ].map((p) => new URL(p, self.registration.scope).toString());

@@ -22,6 +22,7 @@ import {
 } from '../src/tree.js';
 import { fitWithin } from '../src/photo.js';
 import { TIPS, tipsFor } from '../src/tips.js';
+import { ITEM_SUGGESTIONS } from '../src/suggestions.js';
 import { addMonths, todayISO, isOverdue, cadenceFor, overdueLocations } from '../src/review.js';
 
 let passed = 0;
@@ -399,6 +400,35 @@ test('overdueLocations picks out exactly the lapsed ones', () => {
     loc('d', 'Linen', { reviewDue: '2026-09-05' }),
   ];
   assert.deepEqual(overdueLocations(locs, '2026-09-05').map((l) => l.id), ['a']);
+});
+
+// -------------------------------------------------------- suggestions ---
+
+test('item suggestions contain no duplicates', () => {
+  const seen = new Map();
+  const dupes = [];
+  for (const name of ITEM_SUGGESTIONS) {
+    const key = name.trim().toLowerCase();
+    if (seen.has(key)) dupes.push(name);
+    seen.set(key, true);
+  }
+  assert.deepEqual(dupes, [], 'duplicated suggestions');
+});
+
+test('item suggestions are clean, non-empty strings', () => {
+  for (const name of ITEM_SUGGESTIONS) {
+    assert.equal(typeof name, 'string');
+    assert.ok(name.length > 1, `suspiciously short: "${name}"`);
+    assert.equal(name, name.trim(), `has stray whitespace: "${name}"`);
+  }
+  assert.ok(ITEM_SUGGESTIONS.length > 100, 'should be a useful spread, not a token list');
+});
+
+test('nothing in the suggestions assumes a second storey', () => {
+  // Single-storey house: no attic, loft, or under-stair storage.
+  const upstairsOnly = /\b(attic|loft|upstairs|stair|stairs|bannister|landing)\b/i;
+  const offenders = ITEM_SUGGESTIONS.filter((n) => upstairsOnly.test(n));
+  assert.deepEqual(offenders, [], 'these assume a storey the house does not have');
 });
 
 // --------------------------------------------------------------- tips ---
